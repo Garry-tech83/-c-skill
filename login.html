@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skinaiq — Sign In</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#030B14;--surface:#071828;--surface2:#0D2338;
+  --border:rgba(0,210,190,0.1);--accent:#00D2BE;--accent2:#FF5C3A;
+  --accent3:#6C5CE7;--text:#E8F4F2;--muted:#4E7A8A;
+  --good:#39FFB0;--warn:#FFB237;--danger:#FF5C3A;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;}
+.orb{position:fixed;border-radius:50%;filter:blur(130px);opacity:0.08;pointer-events:none;z-index:0;animation:orbF 20s ease-in-out infinite alternate;}
+.o1{width:600px;height:600px;background:var(--accent);top:-200px;right:-100px;}
+.o2{width:500px;height:500px;background:var(--accent3);bottom:-200px;left:-100px;animation-delay:-10s;}
+@keyframes orbF{from{transform:translate(0,0)scale(1)}to{transform:translate(30px,-30px)scale(1.05)}}
+.grid-bg{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(0,210,190,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,210,190,0.015) 1px,transparent 1px);background-size:48px 48px;}
+
+.card{position:relative;z-index:1;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:2.5rem 2rem;width:100%;max-width:420px;box-shadow:0 24px 80px rgba(0,0,0,0.4);}
+
+.logo{display:flex;align-items:center;gap:0.65rem;text-decoration:none;justify-content:center;margin-bottom:2rem;}
+.logo-icon{width:36px;height:36px;background:var(--accent);border-radius:9px;display:flex;align-items:center;justify-content:center;}
+.logo-icon svg{width:20px;height:20px;}
+.logo-text{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:var(--accent);letter-spacing:0.1em;}
+
+.card-title{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;text-align:center;margin-bottom:0.35rem;}
+.card-sub{font-size:0.82rem;color:var(--muted);text-align:center;margin-bottom:1.75rem;}
+
+/* TABS */
+.tabs{display:flex;background:var(--surface2);border-radius:8px;padding:3px;margin-bottom:1.75rem;border:1px solid var(--border);}
+.tab{flex:1;padding:0.5rem;border-radius:6px;font-size:0.75rem;font-weight:600;cursor:pointer;text-align:center;color:var(--muted);transition:all .2s;border:none;background:none;font-family:'DM Sans',sans-serif;}
+.tab.active{background:var(--accent);color:#030B14;}
+
+/* SOCIAL BTNS */
+.social-row{display:flex;gap:0.65rem;margin-bottom:1.25rem;}
+.social-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.65rem;border-radius:8px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;font-size:0.78rem;font-weight:500;color:var(--text);transition:all .2s;font-family:'DM Sans',sans-serif;}
+.social-btn:hover{border-color:rgba(0,210,190,0.3);background:rgba(0,210,190,0.04);}
+.social-btn svg{width:17px;height:17px;flex-shrink:0;}
+
+.divider{display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.divider span{font-size:0.65rem;color:var(--muted);white-space:nowrap;font-family:'DM Mono',monospace;}
+
+/* FORM */
+.field{margin-bottom:1rem;}
+.label{font-size:0.72rem;font-weight:600;color:var(--muted);display:block;margin-bottom:0.4rem;letter-spacing:0.04em;}
+.input-wrap{position:relative;}
+input[type=email],input[type=password],input[type=text],input[type=tel]{
+  width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;
+  padding:0.7rem 1rem;font-family:'DM Sans',sans-serif;font-size:0.85rem;color:var(--text);
+  outline:none;transition:border-color .2s;}
+input:focus{border-color:rgba(0,210,190,0.4);}
+input::placeholder{color:var(--muted);}
+input.err{border-color:rgba(255,92,58,0.5);}
+.eye{position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:1rem;padding:2px;}
+.eye:hover{color:var(--text);}
+.err-msg{font-size:0.68rem;color:var(--danger);margin-top:0.3rem;display:none;}
+.err-msg.show{display:block;}
+
+.forgot{font-size:0.72rem;color:var(--accent);text-decoration:none;float:right;margin-top:-0.5rem;margin-bottom:0.85rem;display:block;}
+.forgot:hover{color:#00EDD8;}
+
+.btn-main{width:100%;padding:0.8rem;border-radius:8px;background:var(--accent);color:#030B14;font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:800;border:none;cursor:pointer;transition:all .2s;letter-spacing:0.02em;display:flex;align-items:center;justify-content:center;gap:0.5rem;}
+.btn-main:hover:not(:disabled){background:#00EDD8;transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,210,190,0.3);}
+.btn-main:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.spinner{width:16px;height:16px;border:2px solid rgba(3,11,20,0.3);border-top-color:#030B14;border-radius:50%;animation:spin .7s linear infinite;display:none;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.footer-link{text-align:center;font-size:0.78rem;color:var(--muted);margin-top:1.25rem;}
+.footer-link a{color:var(--accent);text-decoration:none;font-weight:600;}
+.footer-link a:hover{color:#00EDD8;}
+
+/* PHONE PANEL */
+.phone-panel{display:none;}
+.phone-prefix{position:absolute;left:1rem;top:50%;transform:translateY(-50%);font-size:0.83rem;color:var(--muted);pointer-events:none;}
+.phone-input{padding-left:3rem!important;}
+
+/* ALERT */
+.alert{padding:0.7rem 1rem;border-radius:8px;font-size:0.78rem;margin-bottom:1rem;display:none;align-items:center;gap:0.5rem;}
+.alert.show{display:flex;}
+.alert.success{background:rgba(57,255,176,0.08);border:1px solid rgba(57,255,176,0.25);color:var(--good);}
+.alert.error{background:rgba(255,92,58,0.08);border:1px solid rgba(255,92,58,0.25);color:var(--danger);}
+
+.back-home{position:fixed;top:1.5rem;left:1.5rem;z-index:10;display:flex;align-items:center;gap:0.4rem;font-size:0.75rem;color:var(--muted);text-decoration:none;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0.4rem 0.85rem;transition:all .2s;}
+.back-home:hover{color:var(--text);border-color:rgba(0,210,190,0.3);}
+</style>
+</head>
+<body>
+<div class="orb o1"></div><div class="orb o2"></div><div class="grid-bg"></div>
+<a href="index.html" class="back-home">← Home</a>
+
+<div class="card">
+  <a href="index.html" class="logo">
+    <div class="logo-icon"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" stroke="#030B14" stroke-width="1.5" opacity="0.3"/><path d="M3 9h3l2-4 3 8 2-5 1 2h4" stroke="#030B14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="logo-text">Skinaiq</div>
+  </a>
+
+  <h1 class="card-title">Welcome back</h1>
+  <p class="card-sub">Sign in to your Skinaiq account</p>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('email',this)">Email</button>
+    <button class="tab" onclick="switchTab('phone',this)">Phone</button>
+  </div>
+
+  <div class="alert" id="alertBox"></div>
+
+  <!-- SOCIAL -->
+  <div class="social-row">
+    <button class="social-btn" onclick="signInGoogle()">
+      <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Continue with Google
+    </button>
+  </div>
+
+  <div class="divider"><span>or continue with</span></div>
+
+  <!-- EMAIL PANEL -->
+  <div id="emailPanel">
+    <div class="field">
+      <label class="label">Email Address</label>
+      <input type="email" id="email" placeholder="you@example.com" oninput="clearErr('email')">
+      <div class="err-msg" id="emailErr">Please enter a valid email address</div>
+    </div>
+    <div class="field">
+      <label class="label">Password</label>
+      <div class="input-wrap">
+        <input type="password" id="password" placeholder="••••••••" oninput="clearErr('password')" onkeydown="if(event.key==='Enter')loginEmail()">
+        <button class="eye" onclick="togglePw('password',this)" tabindex="-1">👁</button>
+      </div>
+      <div class="err-msg" id="passwordErr">Password must be at least 6 characters</div>
+    </div>
+    <a href="forgot.html" class="forgot">Forgot password?</a>
+    <button class="btn-main" id="emailBtn" onclick="loginEmail()">
+      <span id="emailBtnTxt">Sign In</span>
+      <div class="spinner" id="emailSpinner"></div>
+    </button>
+  </div>
+
+  <!-- PHONE PANEL -->
+  <div id="phonePanel" class="phone-panel">
+    <div class="field">
+      <label class="label">Phone Number</label>
+      <div class="input-wrap">
+        <span class="phone-prefix">+</span>
+        <input type="tel" id="phone" class="phone-input" placeholder="91 98765 43210" oninput="clearErr('phone')">
+      </div>
+      <div class="err-msg" id="phoneErr">Enter a valid phone number with country code</div>
+    </div>
+    <div id="recaptcha-container"></div>
+    <button class="btn-main" id="phoneBtn" onclick="sendOTP()">
+      <span id="phoneBtnTxt">Send OTP</span>
+      <div class="spinner" id="phoneSpinner"></div>
+    </button>
+  </div>
+
+  <div class="footer-link">Don't have an account? <a href="register.html">Create one →</a></div>
+</div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+// ── PASTE YOUR FIREBASE CONFIG HERE ──────────────────────────────────────────
+const firebaseConfig = {
+  apiKey:            "AIzaSyDGVfC7GswX61J427sWgeTU4lYjoxQPIz4",
+  authDomain:        "skinaiq-33bad.firebaseapp.com",
+  databaseURL:       "https://skinaiq-33bad-default-rtdb.firebaseio.com",
+  projectId:         "skinaiq-33bad",
+  storageBucket:     "skinaiq-33bad.firebasestorage.app",
+  messagingSenderId: "813769076561",
+  appId:             "1:813769076561:web:194da614f35703d95dad70",
+  measurementId:     "G-FZE1HFS8F6"
+};
+// ─────────────────────────────────────────────────────────────────────────────
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+auth.languageCode = 'en';
+let confirmationResult = null;
+
+// ── UI HELPERS ────────────────────────────────────────────────────────────────
+window.switchTab = (mode, el) => {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('emailPanel').style.display = mode === 'email' ? 'block' : 'none';
+  document.getElementById('phonePanel').style.display = mode === 'phone' ? 'block' : 'none';
+};
+window.togglePw = (id, btn) => {
+  const inp = document.getElementById(id);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+};
+window.clearErr = id => {
+  const el = document.getElementById(id);
+  if(el){ el.classList.remove('err'); }
+  const err = document.getElementById(id + 'Err');
+  if(err) err.classList.remove('show');
+};
+function showAlert(type, msg){
+  const b = document.getElementById('alertBox');
+  b.className = 'alert show ' + type;
+  b.textContent = type === 'success' ? '✅ ' + msg : '⚠️ ' + msg;
+}
+function setLoading(btnId, spinnerId, v){
+  document.getElementById(btnId).disabled = v;
+  document.getElementById(spinnerId).style.display = v ? 'block' : 'none';
+}
+
+// ── EMAIL / PASSWORD ──────────────────────────────────────────────────────────
+window.loginEmail = async () => {
+  const email    = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  let ok = true;
+  if(!email || !/\S+@\S+\.\S+/.test(email)){
+    document.getElementById('email').classList.add('err');
+    document.getElementById('emailErr').classList.add('show'); ok = false;
+  }
+  if(!password || password.length < 6){
+    document.getElementById('password').classList.add('err');
+    document.getElementById('passwordErr').classList.add('show'); ok = false;
+  }
+  if(!ok) return;
+  setLoading('emailBtn','emailSpinner',true);
+  try{
+    await signInWithEmailAndPassword(auth, email, password);
+    showAlert('success','Signed in! Redirecting…');
+    setTimeout(() => window.location.href = 'dashboard.html', 1200);
+  }catch(e){
+    setLoading('emailBtn','emailSpinner',false);
+    const msgs = {
+      'auth/user-not-found': 'No account found with this email.',
+      'auth/wrong-password':  'Incorrect password. Try again.',
+      'auth/too-many-requests':'Too many attempts. Please wait.',
+      'auth/invalid-credential':'Invalid email or password.'
+    };
+    showAlert('error', msgs[e.code] || e.message);
+  }
+};
+
+// ── GOOGLE ────────────────────────────────────────────────────────────────────
+window.signInGoogle = async () => {
+  const provider = new GoogleAuthProvider();
+  try{
+    await signInWithPopup(auth, provider);
+    showAlert('success','Signed in with Google! Redirecting…');
+    setTimeout(() => window.location.href = 'dashboard.html', 1200);
+  }catch(e){
+    if(e.code !== 'auth/popup-closed-by-user')
+      showAlert('error', 'Google sign-in failed. Try again.');
+  }
+};
+
+// ── PHONE OTP ─────────────────────────────────────────────────────────────────
+window.sendOTP = async () => {
+  const phone = '+' + document.getElementById('phone').value.replace(/\D/g,'');
+  if(phone.length < 8){
+    document.getElementById('phone').classList.add('err');
+    document.getElementById('phoneErr').classList.add('show'); return;
+  }
+  setLoading('phoneBtn','phoneSpinner',true);
+  try{
+    if(!window.recaptchaVerifier){
+      window.recaptchaVerifier = new RecaptchaVerifier(auth,'recaptcha-container',{size:'invisible'});
+    }
+    confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
+    sessionStorage.setItem('pendingPhone', phone);
+    window.location.href = 'verify.html?mode=login';
+  }catch(e){
+    setLoading('phoneBtn','phoneSpinner',false);
+    showAlert('error', 'Could not send OTP. Check your number and try again.');
+  }
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skinaiq — Reset Password</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#030B14;--surface:#071828;--surface2:#0D2338;--border:rgba(0,210,190,0.1);--accent:#00D2BE;--accent3:#6C5CE7;--text:#E8F4F2;--muted:#4E7A8A;--good:#39FFB0;--warn:#FFB237;--danger:#FF5C3A;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;}
+.orb{position:fixed;border-radius:50%;filter:blur(130px);opacity:0.08;pointer-events:none;z-index:0;animation:orbF 20s ease-in-out infinite alternate;}
+.o1{width:600px;height:600px;background:var(--accent);top:-200px;right:-100px;}
+.o2{width:500px;height:500px;background:var(--accent3);bottom:-200px;left:-100px;animation-delay:-10s;}
+@keyframes orbF{from{transform:translate(0,0)scale(1)}to{transform:translate(30px,-30px)scale(1.05)}}
+.grid-bg{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(0,210,190,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,210,190,0.015) 1px,transparent 1px);background-size:48px 48px;}
+.card{position:relative;z-index:1;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:2.5rem 2rem;width:100%;max-width:400px;box-shadow:0 24px 80px rgba(0,0,0,0.4);}
+.logo{display:flex;align-items:center;gap:0.65rem;text-decoration:none;justify-content:center;margin-bottom:2rem;}
+.logo-icon{width:36px;height:36px;background:var(--accent);border-radius:9px;display:flex;align-items:center;justify-content:center;}
+.logo-icon svg{width:20px;height:20px;}
+.logo-text{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:var(--accent);letter-spacing:0.1em;}
+.icon-box{width:60px;height:60px;background:rgba(0,210,190,0.08);border:1px solid rgba(0,210,190,0.2);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 1.5rem;}
+.card-title{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;text-align:center;margin-bottom:0.35rem;}
+.card-sub{font-size:0.82rem;color:var(--muted);text-align:center;margin-bottom:1.75rem;line-height:1.6;}
+.field{margin-bottom:1rem;}
+.label{font-size:0.72rem;font-weight:600;color:var(--muted);display:block;margin-bottom:0.4rem;letter-spacing:0.04em;}
+input[type=email]{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:0.7rem 1rem;font-family:'DM Sans',sans-serif;font-size:0.85rem;color:var(--text);outline:none;transition:border-color .2s;}
+input:focus{border-color:rgba(0,210,190,0.4);}
+input::placeholder{color:var(--muted);}
+input.err{border-color:rgba(255,92,58,0.5);}
+.err-msg{font-size:0.68rem;color:var(--danger);margin-top:0.3rem;display:none;}
+.err-msg.show{display:block;}
+.btn-main{width:100%;padding:0.8rem;border-radius:8px;background:var(--accent);color:#030B14;font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:800;border:none;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:0.5rem;margin-bottom:0.85rem;}
+.btn-main:hover:not(:disabled){background:#00EDD8;transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,210,190,0.3);}
+.btn-main:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.btn-ghost{width:100%;padding:0.7rem;border-radius:8px;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:0.83rem;font-weight:500;border:1px solid var(--border);cursor:pointer;transition:all .2s;}
+.btn-ghost:hover{color:var(--text);border-color:rgba(0,210,190,0.3);}
+.spinner{width:16px;height:16px;border:2px solid rgba(3,11,20,0.3);border-top-color:#030B14;border-radius:50%;animation:spin .7s linear infinite;display:none;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.alert{padding:0.7rem 1rem;border-radius:8px;font-size:0.78rem;margin-bottom:1rem;display:none;align-items:center;gap:0.5rem;line-height:1.5;}
+.alert.show{display:flex;}
+.alert.success{background:rgba(57,255,176,0.08);border:1px solid rgba(57,255,176,0.25);color:var(--good);}
+.alert.error{background:rgba(255,92,58,0.08);border:1px solid rgba(255,92,58,0.25);color:var(--danger);}
+.footer-link{text-align:center;font-size:0.78rem;color:var(--muted);margin-top:1rem;}
+.footer-link a{color:var(--accent);text-decoration:none;font-weight:600;}
+.footer-link a:hover{color:#00EDD8;}
+.back-home{position:fixed;top:1.5rem;left:1.5rem;z-index:10;display:flex;align-items:center;gap:0.4rem;font-size:0.75rem;color:var(--muted);text-decoration:none;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0.4rem 0.85rem;transition:all .2s;}
+.back-home:hover{color:var(--text);border-color:rgba(0,210,190,0.3);}
+
+/* SUCCESS STATE */
+.success-state{text-align:center;display:none;}
+.success-glow{width:70px;height:70px;background:linear-gradient(135deg,var(--accent),var(--good));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 1.25rem;box-shadow:0 0 30px rgba(0,210,190,0.3);}
+</style>
+</head>
+<body>
+<div class="orb o1"></div><div class="orb o2"></div><div class="grid-bg"></div>
+<a href="login.html" class="back-home">← Back to login</a>
+
+<div class="card">
+  <a href="index.html" class="logo">
+    <div class="logo-icon"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" stroke="#030B14" stroke-width="1.5" opacity="0.3"/><path d="M3 9h3l2-4 3 8 2-5 1 2h4" stroke="#030B14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="logo-text">Skinaiq</div>
+  </a>
+
+  <!-- FORM STATE -->
+  <div id="formState">
+    <div class="icon-box">🔐</div>
+    <h1 class="card-title">Forgot password?</h1>
+    <p class="card-sub">No worries. Enter your email and we'll send you a reset link instantly.</p>
+
+    <div class="alert" id="alertBox"></div>
+
+    <div class="field">
+      <label class="label">Email Address</label>
+      <input type="email" id="email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')sendReset()" oninput="clearErr()">
+      <div class="err-msg" id="emailErr">Enter a valid email address</div>
+    </div>
+
+    <button class="btn-main" id="resetBtn" onclick="sendReset()">
+      <span id="btnTxt">Send Reset Link</span>
+      <div class="spinner" id="spinner"></div>
+    </button>
+    <button class="btn-ghost" onclick="window.location.href='login.html'">← Back to Sign In</button>
+  </div>
+
+  <!-- SUCCESS STATE -->
+  <div class="success-state" id="successState">
+    <div class="success-glow">✉️</div>
+    <h2 class="card-title">Check your email</h2>
+    <p class="card-sub" id="successMsg">We sent a password reset link to <strong></strong>. Click the link in the email to set a new password.</p>
+    <button class="btn-main" onclick="window.location.href='login.html'" style="margin-top:1.25rem;">Back to Sign In</button>
+    <div class="footer-link" style="margin-top:0.75rem;">
+      Didn't receive it? <a href="#" onclick="resend(event)">Resend email</a>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+// ── PASTE YOUR FIREBASE CONFIG HERE ──────────────────────────────────────────
+const firebaseConfig = {
+  apiKey:            "AIzaSyDGVfC7GswX61J427sWgeTU4lYjoxQPIz4",
+  authDomain:        "skinaiq-33bad.firebaseapp.com",
+  databaseURL:       "https://skinaiq-33bad-default-rtdb.firebaseio.com",
+  projectId:         "skinaiq-33bad",
+  storageBucket:     "skinaiq-33bad.firebasestorage.app",
+  messagingSenderId: "813769076561",
+  appId:             "1:813769076561:web:194da614f35703d95dad70",
+  measurementId:     "G-FZE1HFS8F6"
+};
+// ─────────────────────────────────────────────────────────────────────────────
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+let lastEmail = '';
+
+window.clearErr = () => {
+  document.getElementById('email').classList.remove('err');
+  document.getElementById('emailErr').classList.remove('show');
+};
+function showAlert(type, msg){
+  const b = document.getElementById('alertBox');
+  b.className = 'alert show ' + type;
+  b.textContent = type === 'success' ? '✅ ' + msg : '⚠️ ' + msg;
+}
+
+window.sendReset = async () => {
+  const email = document.getElementById('email').value.trim();
+  if(!email || !/\S+@\S+\.\S+/.test(email)){
+    document.getElementById('email').classList.add('err');
+    document.getElementById('emailErr').classList.add('show'); return;
+  }
+  document.getElementById('resetBtn').disabled = true;
+  document.getElementById('spinner').style.display = 'block';
+  document.getElementById('btnTxt').textContent = 'Sending…';
+  try{
+    await sendPasswordResetEmail(auth, email);
+    lastEmail = email;
+    document.getElementById('formState').style.display   = 'none';
+    document.getElementById('successState').style.display = 'block';
+    document.querySelector('#successMsg strong').textContent = email;
+  }catch(e){
+    document.getElementById('resetBtn').disabled = false;
+    document.getElementById('spinner').style.display = 'none';
+    document.getElementById('btnTxt').textContent = 'Send Reset Link';
+    const msgs = {
+      'auth/user-not-found': 'No account found with this email.',
+      'auth/invalid-email':  'Invalid email address.'
+    };
+    showAlert('error', msgs[e.code] || 'Something went wrong. Try again.');
+  }
+};
+
+window.resend = async (e) => {
+  e.preventDefault();
+  if(!lastEmail) return;
+  try{
+    await sendPasswordResetEmail(auth, lastEmail);
+    document.querySelector('.footer-link').innerHTML = '<span style="color:var(--good)">✅ Email resent!</span>';
+  }catch{ /* silent */ }
+};
+</script>
+</body>
+</html>

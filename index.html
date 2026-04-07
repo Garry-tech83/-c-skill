@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skinaiq — AI-Powered Skin Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#030B14;--surface:#071828;--surface2:#0D2338;
+  --border:rgba(0,210,190,0.1);--accent:#00D2BE;--accent2:#FF5C3A;
+  --accent3:#6C5CE7;--text:#E8F4F2;--muted:#4E7A8A;
+  --good:#39FFB0;--warn:#FFB237;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden;}
+
+/* BG */
+.orb{position:fixed;border-radius:50%;filter:blur(130px);opacity:0.1;pointer-events:none;z-index:0;animation:orbF 20s ease-in-out infinite alternate;}
+.o1{width:700px;height:700px;background:var(--accent);top:-200px;right:-200px;}
+.o2{width:600px;height:600px;background:var(--accent3);bottom:-200px;left:-200px;animation-delay:-10s;}
+@keyframes orbF{from{transform:translate(0,0)scale(1)}to{transform:translate(40px,-40px)scale(1.05)}}
+.grid-bg{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(0,210,190,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,210,190,0.02) 1px,transparent 1px);
+  background-size:48px 48px;animation:gD 30s linear infinite;}
+@keyframes gD{to{background-position:48px 48px;}}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 3rem;background:rgba(3,11,20,0.8);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);}
+.logo{display:flex;align-items:center;gap:0.65rem;text-decoration:none;}
+.logo-icon{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.logo-icon svg{width:18px;height:18px;}
+.logo-text{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--accent);letter-spacing:0.1em;}
+.logo-sub{font-size:0.55rem;color:var(--muted);display:block;margin-top:-2px;letter-spacing:0.15em;}
+.nav-links{display:flex;align-items:center;gap:2rem;}
+.nav-links a{font-size:0.78rem;color:var(--muted);text-decoration:none;letter-spacing:0.03em;transition:color 0.2s;}
+.nav-links a:hover{color:var(--text);}
+.nav-btns{display:flex;gap:0.5rem;}
+.btn{display:inline-flex;align-items:center;gap:0.4rem;padding:0.55rem 1.25rem;border-radius:7px;
+  font-family:'DM Sans',sans-serif;font-size:0.78rem;font-weight:500;cursor:pointer;
+  text-decoration:none;border:none;transition:all 0.2s;}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);}
+.btn-ghost:hover{color:var(--text);border-color:rgba(0,210,190,0.3);}
+.btn-primary{background:var(--accent);color:#030B14;font-weight:700;}
+.btn-primary:hover{background:#00EDD8;transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,210,190,0.35);}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:9rem 2rem 6rem;position:relative;z-index:1;}
+.hero-badge{display:inline-flex;align-items:center;gap:0.5rem;
+  background:rgba(0,210,190,0.07);border:1px solid rgba(0,210,190,0.2);
+  color:var(--accent);font-size:0.62rem;letter-spacing:0.2em;font-weight:600;
+  padding:0.4rem 1rem;border-radius:20px;margin-bottom:2rem;text-transform:uppercase;
+  animation:fadeUp 0.6s ease both;}
+.pulse-dot{width:6px;height:6px;border-radius:50%;background:var(--good);
+  animation:pD 2s ease-in-out infinite;}
+@keyframes pD{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(57,255,176,0.4)}50%{opacity:.8;box-shadow:0 0 0 6px rgba(57,255,176,0)}}
+.hero-title{font-family:'Syne',sans-serif;font-size:clamp(2.8rem,7vw,5.5rem);font-weight:800;
+  line-height:1.05;margin-bottom:0.35rem;letter-spacing:-0.025em;
+  animation:fadeUp 0.6s 0.1s ease both;}
+.hero-title em{font-style:normal;
+  background:linear-gradient(135deg,var(--accent),var(--good));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub-title{font-family:'Syne',sans-serif;font-size:clamp(1.5rem,3.5vw,2.8rem);
+  font-weight:700;color:var(--muted);margin-bottom:1.5rem;
+  animation:fadeUp 0.6s 0.15s ease both;}
+.hero-desc{font-size:1.05rem;color:var(--muted);max-width:580px;margin:0 auto 2.5rem;
+  line-height:1.8;animation:fadeUp 0.6s 0.2s ease both;}
+.hero-desc strong{color:var(--text);}
+.hero-actions{display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;
+  animation:fadeUp 0.6s 0.25s ease both;}
+.btn-hero{padding:0.8rem 2rem;font-size:0.88rem;border-radius:8px;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* STATS BAR */
+.stats-bar{display:flex;justify-content:center;gap:3rem;flex-wrap:wrap;
+  margin-top:4rem;padding-top:3rem;border-top:1px solid var(--border);
+  animation:fadeUp 0.6s 0.35s ease both;}
+.stat-item{text-align:center;}
+.stat-val{font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;
+  background:linear-gradient(135deg,var(--accent),var(--good));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.stat-lbl{font-size:0.65rem;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;margin-top:0.2rem;}
+
+/* FEATURES */
+.features{padding:6rem 2rem;position:relative;z-index:1;}
+.section-label{font-size:0.62rem;letter-spacing:0.22em;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:0.75rem;}
+.section-title{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:800;
+  line-height:1.15;margin-bottom:1rem;}
+.section-sub{font-size:0.97rem;color:var(--muted);max-width:580px;line-height:1.8;}
+.container{max-width:1140px;margin:0 auto;padding:0 2rem;}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:3rem;}
+.feat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:1.75rem;transition:all 0.3s;position:relative;overflow:hidden;}
+.feat-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,210,190,0.04),transparent);opacity:0;transition:opacity 0.3s;}
+.feat-card:hover{border-color:rgba(0,210,190,0.25);transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,0.3);}
+.feat-card:hover::before{opacity:1;}
+.feat-icon{font-size:1.75rem;margin-bottom:1rem;}
+.feat-title{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;margin-bottom:0.5rem;}
+.feat-desc{font-size:0.83rem;color:var(--muted);line-height:1.7;}
+
+/* HOW IT WORKS */
+.how{padding:6rem 2rem;position:relative;z-index:1;background:rgba(7,24,40,0.5);}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:3rem;position:relative;}
+.steps::before{content:'';position:absolute;top:28px;left:calc(16.6% + 22px);right:calc(16.6% + 22px);
+  height:1px;background:linear-gradient(90deg,var(--accent),var(--accent3),var(--good));z-index:0;}
+.step{text-align:center;position:relative;z-index:1;}
+.step-num{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:1.1rem;margin:0 auto 1.25rem;position:relative;z-index:2;
+  border:1px solid var(--border);transition:all 0.3s;}
+.step-num.s1{background:rgba(0,210,190,0.1);color:var(--accent);}
+.step-num.s2{background:rgba(108,92,231,0.1);color:var(--accent3);}
+.step-num.s3{background:rgba(57,255,176,0.1);color:var(--good);}
+.step-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.5rem;}
+.step-desc{font-size:0.83rem;color:var(--muted);line-height:1.7;}
+
+/* AI MODELS */
+.models-section{padding:6rem 2rem;position:relative;z-index:1;}
+.models-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:3rem;}
+.model-card{background:var(--surface);border:2px solid;border-radius:12px;padding:1.5rem;
+  transition:all 0.3s;position:relative;overflow:hidden;}
+.model-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.4);}
+.mc-blue{border-color:rgba(59,130,246,0.3);background:rgba(59,130,246,0.04);}
+.mc-red{border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.04);}
+.mc-green{border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.04);}
+.mc-amber{border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.04);}
+.model-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem;}
+.model-num-wrap{display:flex;align-items:center;gap:0.75rem;}
+.m-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;color:white;flex-shrink:0;}
+.mn-blue{background:#3B82F6;}.mn-red{background:#EF4444;}.mn-green{background:#10B981;}.mn-amber{background:#F59E0B;}
+.m-name{font-family:'Syne',sans-serif;font-size:0.92rem;font-weight:700;}
+.m-acc{padding:0.2rem 0.65rem;border-radius:5px;font-family:'DM Mono',monospace;font-size:0.8rem;font-weight:500;color:white;}
+.acc-blue{background:#3B82F6;}.acc-red{background:#EF4444;}.acc-green{background:#10B981;}.acc-amber{background:#F59E0B;}
+.m-role{font-size:0.72rem;font-weight:600;margin-bottom:0.65rem;padding-left:44px;}
+.role-blue{color:#60A5FA;}.role-red{color:#F87171;}.role-green{color:#34D399;}.role-amber{color:#FCD34D;}
+.m-desc{font-size:0.82rem;color:var(--muted);line-height:1.65;}
+.m-bar{height:2px;border-radius:1px;background:rgba(255,255,255,0.06);margin-top:1rem;overflow:hidden;}
+.m-fill{height:100%;border-radius:1px;animation:bF 1.5s ease-out forwards;}
+@keyframes bF{from{width:0}}
+.fill-blue{background:#3B82F6;}.fill-red{background:#EF4444;}.fill-green{background:#10B981;}.fill-amber{background:#F59E0B;}
+.fusion-bar{background:var(--dark,#0F172A);border:1px solid rgba(57,255,176,0.2);border-radius:12px;
+  padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:2rem;
+  background:linear-gradient(135deg,rgba(0,210,190,0.05),rgba(108,92,231,0.05));}
+.f-num{width:32px;height:32px;border-radius:50%;background:var(--good);color:#030B14;
+  display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:800;flex-shrink:0;}
+.f-title{font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;}
+.f-sub{font-size:0.68rem;color:var(--muted);margin-top:0.15rem;}
+.f-badge{background:var(--good);color:#030B14;font-family:'DM Mono',monospace;font-size:0.72rem;font-weight:700;
+  padding:0.4rem 1.1rem;border-radius:6px;flex-shrink:0;letter-spacing:0.1em;}
+
+/* CONDITIONS */
+.conditions-section{padding:6rem 2rem;background:rgba(7,24,40,0.5);position:relative;z-index:1;}
+.cond-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:3rem;}
+.cond-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;}
+.cond-header{font-size:0.9rem;font-weight:600;margin-bottom:1.1rem;padding-bottom:0.75rem;
+  border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.5rem;}
+.cond-row{display:flex;align-items:center;justify-content:space-between;padding:0.55rem 0.65rem;
+  border-radius:6px;margin-bottom:0.35rem;font-size:0.83rem;border:1px solid;transition:all 0.15s;cursor:default;}
+.cond-row:hover{transform:translateX(4px);}
+.cr-crit{background:rgba(239,68,68,0.06);border-color:rgba(239,68,68,0.2);}
+.cr-mod{background:rgba(245,158,11,0.06);border-color:rgba(245,158,11,0.2);}
+.cr-mild{background:rgba(16,185,129,0.06);border-color:rgba(16,185,129,0.15);}
+.sev-crit{font-size:0.72rem;font-weight:600;color:#EF4444;}
+.sev-mod{font-size:0.72rem;font-weight:600;color:#F59E0B;}
+.sev-mild{font-size:0.72rem;font-weight:600;color:#10B981;}
+.legend{display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:1.5rem;}
+.leg-item{display:flex;align-items:center;gap:0.4rem;font-size:0.75rem;color:var(--muted);}
+.leg-dot{width:8px;height:8px;border-radius:50%;}
+.disclaimer{display:flex;align-items:flex-start;gap:0.75rem;
+  background:rgba(0,210,190,0.05);border:1px solid rgba(0,210,190,0.15);
+  border-radius:8px;padding:0.85rem 1.1rem;font-size:0.8rem;color:var(--muted);margin-top:1.5rem;line-height:1.65;}
+
+/* CTA */
+.cta-section{padding:6rem 2rem;text-align:center;position:relative;z-index:1;}
+.cta-title{font-family:'Syne',sans-serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:800;
+  margin-bottom:1rem;line-height:1.15;}
+.cta-sub{font-size:1rem;color:var(--muted);margin-bottom:2.5rem;max-width:520px;margin-left:auto;margin-right:auto;line-height:1.75;}
+.cta-pills{display:flex;justify-content:center;flex-wrap:wrap;gap:0.75rem;}
+.pill{display:inline-flex;align-items:center;gap:0.5rem;background:var(--surface);
+  border:1px solid var(--border);border-radius:50px;padding:0.65rem 1.5rem;
+  font-size:0.82rem;color:var(--text);text-decoration:none;transition:all 0.2s;}
+.pill:hover{border-color:rgba(0,210,190,0.35);transform:translateY(-2px);}
+.pill-primary{background:var(--accent);border-color:var(--accent);color:#030B14;font-weight:700;}
+.pill-primary:hover{background:#00EDD8;}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:2rem 3rem;display:flex;align-items:center;
+  justify-content:space-between;position:relative;z-index:1;flex-wrap:wrap;gap:1rem;}
+.footer-logo{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;color:var(--accent);letter-spacing:0.1em;}
+.footer-links{display:flex;gap:1.5rem;}
+.footer-links a{font-size:0.72rem;color:var(--muted);text-decoration:none;transition:color 0.2s;}
+.footer-links a:hover{color:var(--text);}
+.footer-note{font-size:0.65rem;color:var(--muted);}
+
+/* API DEMO */
+.api-demo{padding:5rem 2rem;position:relative;z-index:1;}
+.code-block{background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:10px;
+  padding:1.25rem 1.5rem;font-family:'DM Mono',monospace;font-size:0.75rem;
+  line-height:1.8;color:var(--text);overflow-x:auto;margin-top:1rem;}
+.code-block .kw{color:#6C5CE7;}.code-block .str{color:#00D2BE;}.code-block .cmt{color:var(--muted);}
+.code-block .num{color:#FFB237;}
+.endpoint-list{display:grid;grid-template-columns:repeat(2,1fr);gap:0.75rem;margin-top:1.5rem;}
+.endpoint{background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  padding:0.85rem 1rem;display:flex;align-items:center;gap:0.85rem;}
+.ep-method{font-family:'DM Mono',monospace;font-size:0.65rem;font-weight:500;padding:0.2rem 0.5rem;
+  border-radius:4px;flex-shrink:0;}
+.post{background:rgba(0,210,190,0.12);color:var(--accent);}
+.get{background:rgba(57,255,176,0.1);color:var(--good);}
+.ep-route{font-family:'DM Mono',monospace;font-size:0.73rem;color:var(--text);flex:1;}
+.ep-desc{font-size:0.68rem;color:var(--muted);}
+
+@media(max-width:768px){
+  .features-grid,.models-grid,.cond-grid,.steps,.endpoint-list{grid-template-columns:1fr;}
+  nav{padding:1rem 1.5rem;}.nav-links{display:none;}
+  .stats-bar{gap:1.5rem;}.steps::before{display:none;}
+  footer{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+<div class="orb o1"></div>
+<div class="orb o2"></div>
+<div class="grid-bg"></div>
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" stroke="#030B14" stroke-width="1.5" opacity="0.3"/><path d="M3 9h3l2-4 3 8 2-5 1 2h4" stroke="#030B14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div><div class="logo-text">Skinaiq</div><span class="logo-sub">AI-Powered Skin Intelligence</span></div>
+  </a>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#models">AI Models</a>
+    <a href="#conditions">Conditions</a>
+    <a href="#api">API</a>
+  </div>
+  <div class="nav-btns">
+    <a href="login.html" class="btn btn-ghost">Sign In</a>
+    <a href="register.html" class="btn btn-primary">Get Started →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge"><div class="pulse-dot"></div>14 Sensors Active · AI-Powered Screening</div>
+  <h1 class="hero-title">Meet <em>Skinaiq</em></h1>
+  <div class="hero-sub-title">Detect skin disease before it begins.</div>
+  <p class="hero-desc">
+    AI-powered skin disease detection using your <strong>phone camera</strong> and <strong>smartwatch</strong>.
+    No extra hardware. 20+ conditions detected before symptoms appear.
+    <strong>Doctor-reviewed</strong> results in under 3 seconds.
+  </p>
+  <div class="hero-actions">
+    <a href="register.html" class="btn btn-primary btn-hero">🚀 Get Started Free</a>
+    <a href="scan.html" class="btn btn-ghost btn-hero">🔬 Run a Scan</a>
+    <a href="login.html" class="btn btn-ghost btn-hero">Sign In</a>
+  </div>
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-val">97.6%</div><div class="stat-lbl">Detection Accuracy</div></div>
+    <div class="stat-item"><div class="stat-val">3s</div><div class="stat-lbl">Scan Speed</div></div>
+    <div class="stat-item"><div class="stat-val">20+</div><div class="stat-lbl">Detectable Conditions</div></div>
+    <div class="stat-item"><div class="stat-val">5</div><div class="stat-lbl">AI Models</div></div>
+    <div class="stat-item"><div class="stat-val">$5.8B</div><div class="stat-lbl">Market by 2033</div></div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-label">Core Platform</div>
+    <h2 class="section-title">Everything you need.<br>Nothing extra.</h2>
+    <p class="section-sub">Skinaiq works with hardware you already own. No clinic visit, no waiting room, no extra devices.</p>
+    <div class="features-grid">
+      <div class="feat-card">
+        <div class="feat-icon">📷</div>
+        <div class="feat-title">Phone Camera Detection</div>
+        <p class="feat-desc">Point your camera at any skin area. Skinaiq's EfficientNet-B4 model classifies 20+ conditions from a single photo in under 1 second.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🎙️</div>
+        <div class="feat-title">Voice Biomarker Analysis</div>
+        <p class="feat-desc">Speak 10 seconds into your mic. Wav2Vec 2.0 analyses your voice for stress markers, tremors, breathing patterns, and neurological signals.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">⌚</div>
+        <div class="feat-title">Smartwatch Integration</div>
+        <p class="feat-desc">Connects to Apple Watch, Samsung Galaxy Watch, or any WearOS device. HRV, SpO2, heart rate, and temperature feed the Fusion Engine.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🧠</div>
+        <div class="feat-title">5-Model AI Fusion</div>
+        <p class="feat-desc">No single model. Five specialised AI models run in parallel. The Skinaiq Fusion Engine (XGBoost + LSTM) unifies all outputs into one score.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">👨‍⚕️</div>
+        <div class="feat-title">Doctor-Reviewed Alerts</div>
+        <p class="feat-desc">Every alert is reviewed by a PHIP-certified dermatologist before reaching you. No raw AI output — always physician-validated screening.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">⏰</div>
+        <div class="feat-title">Pre-Symptom Detection</div>
+        <p class="feat-desc">Skinaiq detects conditions 8–21 days before you feel symptoms. The earlier the detection, the better the outcome — always.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="container">
+    <div class="section-label">How It Works</div>
+    <h2 class="section-title">Scan. Analyse. Protect.</h2>
+    <p class="section-sub">Three steps. Under 3 seconds. Clinical-grade output.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num s1">📷</div>
+        <div class="step-title">1. Capture</div>
+        <p class="step-desc">Open Skinaiq, point your camera at your face or skin area of concern, and say a short phrase. The app simultaneously connects to your smartwatch biometrics.</p>
+      </div>
+      <div class="step">
+        <div class="step-num s2">🤖</div>
+        <div class="step-title">2. Analyse</div>
+        <p class="step-desc">Five AI models process your image, voice, and biometrics in parallel. Facial landmarks (468 points), skin tone changes, voice patterns, and HRV — all in 3 seconds.</p>
+      </div>
+      <div class="step">
+        <div class="step-num s3">🩺</div>
+        <div class="step-title">3. Act</div>
+        <p class="step-desc">The Fusion Engine generates your Health Score, risk predictions, and personalised intervention plan. Your dermatologist reviews it before you see it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AI MODELS -->
+<section class="models-section" id="models">
+  <div class="container">
+    <div class="section-label">AI &amp; ML Models</div>
+    <h2 class="section-title">5 specialised AI models<br>working together.</h2>
+    <p class="section-sub">Each model is purpose-built for a specific signal. Together they see what no single model — and no single human — can detect alone.</p>
+    <div class="models-grid">
+      <div class="model-card mc-blue">
+        <div class="model-header">
+          <div class="model-num-wrap"><div class="m-num mn-blue">01</div><div class="m-name">EfficientNet-B4</div></div>
+          <div class="m-acc acc-blue">94%</div>
+        </div>
+        <div class="m-role role-blue">Skin Lesion Classifier</div>
+        <p class="m-desc">Classifies 20+ skin conditions from camera images. Optimized for mobile — runs on-device in under 1 second. Fine-tuned on ISIC 2020 + HAM10000 datasets.</p>
+        <div class="m-bar"><div class="m-fill fill-blue" style="width:94%"></div></div>
+      </div>
+      <div class="model-card mc-red">
+        <div class="model-header">
+          <div class="model-num-wrap"><div class="m-num mn-red">02</div><div class="m-name">Vision Transformer (ViT)</div></div>
+          <div class="m-acc acc-red">97.6%</div>
+        </div>
+        <div class="m-role role-red">Cancer Detection Engine</div>
+        <p class="m-desc">Achieved 97.61% accuracy on melanoma detection datasets. More accurate than the average dermatologist at 86.4%. Processes attention across full-skin image patches.</p>
+        <div class="m-bar"><div class="m-fill fill-red" style="width:97.6%"></div></div>
+      </div>
+      <div class="model-card mc-green">
+        <div class="model-header">
+          <div class="model-num-wrap"><div class="m-num mn-green">03</div><div class="m-name">MediaPipe Face Mesh</div></div>
+          <div class="m-acc acc-green">99%</div>
+        </div>
+        <div class="m-role role-green">Facial Analysis · 468 Points</div>
+        <p class="m-desc">Google's real-time facial landmark detection. Maps skin zones, detects redness, pallor, puffiness and eye changes. Runs at 60fps passively on every app open.</p>
+        <div class="m-bar"><div class="m-fill fill-green" style="width:99%"></div></div>
+      </div>
+      <div class="model-card mc-amber">
+        <div class="model-header">
+          <div class="model-num-wrap"><div class="m-num mn-amber">04</div><div class="m-name">Wav2Vec 2.0</div></div>
+          <div class="m-acc acc-amber">88%</div>
+        </div>
+        <div class="m-role role-amber">Voice Biomarker Analysis</div>
+        <p class="m-desc">Meta's state-of-the-art voice AI. Detects stress markers, tremors, breathing patterns and speech anomalies correlated with 8+ neurological and metabolic conditions.</p>
+        <div class="m-bar"><div class="m-fill fill-amber" style="width:88%"></div></div>
+      </div>
+    </div>
+    <div class="fusion-bar" style="margin-top:1rem;">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <div class="f-num">05</div>
+        <div><div class="f-title">Skinaiq Fusion Engine — XGBoost + LSTM Neural Network</div>
+          <div class="f-sub">Master predictor · Combines all model outputs into a single Health Score + Risk Prediction + Intervention Plan</div></div>
+      </div>
+      <div class="f-badge">ACTIVE</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONDITIONS -->
+<section class="conditions-section" id="conditions">
+  <div class="container">
+    <div class="section-label">What We Detect</div>
+    <h2 class="section-title">20+ conditions —<br>before symptoms appear.</h2>
+    <p class="section-sub">Skinaiq detects conditions from two data streams: your camera and your voice + smartwatch — giving a complete multi-modal health picture.</p>
+    <div class="legend" style="margin-top:1.5rem;">
+      <div class="leg-item"><div class="leg-dot" style="background:#EF4444"></div>Critical — Immediate review</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#F59E0B"></div>Moderate — Monitor &amp; consult</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#10B981"></div>Mild — Early-stage detection</div>
+    </div>
+    <div class="cond-grid">
+      <div class="cond-card">
+        <div class="cond-header">📷 From Camera Alone</div>
+        <div class="cond-row cr-crit"><span>Melanoma / Skin Cancer</span><span class="sev-crit">Critical</span></div>
+        <div class="cond-row cr-crit"><span>Basal Cell Carcinoma</span><span class="sev-crit">Critical</span></div>
+        <div class="cond-row cr-crit"><span>Jaundice (from eye scan)</span><span class="sev-crit">Critical</span></div>
+        <div class="cond-row cr-mod"><span>Rosacea</span><span class="sev-mod">Moderate</span></div>
+        <div class="cond-row cr-mod"><span>Psoriasis &amp; Eczema</span><span class="sev-mod">Moderate</span></div>
+        <div class="cond-row cr-mod"><span>Vitamin D Deficiency</span><span class="sev-mod">Moderate</span></div>
+        <div class="cond-row cr-mild"><span>Acne (Type &amp; Severity)</span><span class="sev-mild">Mild</span></div>
+        <div class="cond-row cr-mild"><span>Hyperpigmentation</span><span class="sev-mild">Mild</span></div>
+      </div>
+      <div class="cond-card">
+        <div class="cond-header">🎙️ From Voice + Smartwatch</div>
+        <div class="cond-row cr-crit"><span>Parkinson's (Early Signs)</span><span class="sev-crit">Critical</span></div>
+        <div class="cond-row cr-crit"><span>Alzheimer's Risk</span><span class="sev-crit">Critical</span></div>
+        <div class="cond-row cr-crit"><span>Type 2 Diabetes</span><span class="sev-crit">Critical</span></div>
+        <div class="cond-row cr-mod"><span>Depression / Anxiety</span><span class="sev-mod">Moderate</span></div>
+        <div class="cond-row cr-mod"><span>Sleep Apnea</span><span class="sev-mod">Moderate</span></div>
+        <div class="cond-row cr-mod"><span>Hypertension</span><span class="sev-mod">Moderate</span></div>
+        <div class="cond-row cr-mild"><span>Chronic Stress / Burnout</span><span class="sev-mild">Mild</span></div>
+        <div class="cond-row cr-mild"><span>Dehydration</span><span class="sev-mild">Mild</span></div>
+      </div>
+    </div>
+    <div class="disclaimer">⚠️ <span><strong style="color:var(--text)">Disclaimer:</strong> Skinaiq is a screening tool, not a clinical diagnosis. All alerts are reviewed by a certified dermatologist before reaching the patient. Skinaiq does not replace professional medical advice.</span></div>
+  </div>
+</section>
+
+<!-- API DOCS -->
+<section class="api-demo" id="api">
+  <div class="container">
+    <div class="section-label">Backend API</div>
+    <h2 class="section-title">Full REST API included.</h2>
+    <p class="section-sub">Every feature is accessible via API. Run a full scan, query model info, retrieve patient history — all RESTful endpoints with JSON responses.</p>
+    <div class="endpoint-list">
+      <div class="endpoint"><span class="ep-method post">POST</span><div><div class="ep-route">/api/scan/full</div><div class="ep-desc">Full scan — image + voice + biometrics → all 5 models</div></div></div>
+      <div class="endpoint"><span class="ep-method post">POST</span><div><div class="ep-route">/api/scan/image</div><div class="ep-desc">Image-only scan → EfficientNet + ViT + FaceMesh</div></div></div>
+      <div class="endpoint"><span class="ep-method post">POST</span><div><div class="ep-route">/api/scan/voice</div><div class="ep-desc">Voice-only analysis → Wav2Vec 2.0 biomarkers</div></div></div>
+      <div class="endpoint"><span class="ep-method get">GET</span><div><div class="ep-route">/api/models/info</div><div class="ep-desc">List all 5 AI models with accuracy metrics</div></div></div>
+      <div class="endpoint"><span class="ep-method get">GET</span><div><div class="ep-route">/api/conditions</div><div class="ep-desc">Full list of 20+ detectable conditions</div></div></div>
+      <div class="endpoint"><span class="ep-method get">GET</span><div><div class="ep-route">/api/patient/history</div><div class="ep-desc">7-day scan history and health score trend</div></div></div>
+    </div>
+    <div class="code-block"><span class="cmt"># Example: Full Skinaiq scan</span>
+<span class="kw">import</span> requests
+
+response = requests.<span class="kw">post</span>(<span class="str">"http://localhost:5000/api/scan/full"</span>, files={
+    <span class="str">"image"</span>: open(<span class="str">"skin_photo.jpg"</span>, <span class="str">"rb"</span>),
+    <span class="str">"audio"</span>: open(<span class="str">"voice_sample.wav"</span>, <span class="str">"rb"</span>),
+}, data={<span class="str">"biometrics"</span>: <span class="str">'{"hr":72,"hrv":62,"spo2":98}'</span>})
+
+report = response.json()
+<span class="kw">print</span>(<span class="str">f"Health Score: {report['summary']['health_score']}"</span>)
+<span class="kw">print</span>(<span class="str">f"Top Risk: {report['summary']['top_risk']['name']}"</span>)
+<span class="kw">print</span>(<span class="str">f"Confidence: {report['summary']['top_risk']['confidence']}%"</span>)</div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <h2 class="cta-title">Skin-first.<br>AI-driven. Doctor-connected.</h2>
+    <p class="cta-sub">Start your free scan now. No account required. Results reviewed by a certified dermatologist.</p>
+    <div class="cta-pills">
+      <a href="scan.html" class="pill pill-primary">🔬 Start Free Scan</a>
+      <a href="dashboard.html" class="pill">📊 View Dashboard</a>
+      <a href="#api" class="pill">⚙️ Explore API</a>
+      <a href="#models" class="pill">🤖 AI Models</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>
+    <div class="footer-logo">Skinaiq</div>
+    <div style="font-size:0.62rem;color:var(--muted);margin-top:0.2rem;">AI-Powered Skin Intelligence · 2025 · Confidential</div>
+  </div>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="login.html">Sign In</a>
+    <a href="register.html">Register</a>
+    <a href="scan.html">Scan</a>
+    <a href="chat.html">AI Consultant</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="#api">API Docs</a>
+  </div>
+  <div class="footer-note">⚠️ Screening tool only. Not a clinical diagnosis. Always consult a physician.</div>
+</footer>
+</body>
+</html>
